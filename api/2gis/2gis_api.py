@@ -1,8 +1,6 @@
 import requests
 
 
-city = 'Санкт-Петербург'
-Key = 'rugoqt'
 
 class two_gis():
 
