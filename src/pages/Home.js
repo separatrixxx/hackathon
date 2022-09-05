@@ -5,7 +5,7 @@ function Home() {
     return (
         <div className="flex flex-col w-full h-screen">
             <Header />
-            <div id="map" className="w-full h-5/6"></div>
+            <div id="container" className="w-full h-5/6"></div>
         </div>
     );
 }
