@@ -44,18 +44,34 @@ mainBtn?.addEventListener('click', () => {
     }
 })
 
+let map;
 
-const map = new mapgl.Map('container', {
-    center: [37.668598, 55.76259],
-    zoom: 13,
-    key: 'bfd8bbca-8abf-11ea-b033-5fa57aae2de7',
-});
+let time = new Date().getHours();
+
+if (time > 4 && time < 21) {
+    map = new mapgl.Map('container', {
+        center: [37.668598, 55.76259],
+        zoom: 13,
+        key: 'bfd8bbca-8abf-11ea-b033-5fa57aae2de7',
+        style: 'add11b0a-e1ad-4b39-8d87-3fa4c80550ce'
+    });
+} else {
+    map = new mapgl.Map('container', {
+        center: [37.668598, 55.76259],
+        zoom: 13,
+        key: 'bfd8bbca-8abf-11ea-b033-5fa57aae2de7',
+        style: '2b68bd2c-5b29-41f5-acd7-510f1b15b5c7'
+    });
+}
+
 const directions = new mapgl.Directions(map, {
     directionsApiKey: 'rugoqt4514 ',
 });
 const markers = [];
 let firstPoint;
 let secondPoint;
+let thirdPoint;
+let forthPoint;
 // A current selecting point
 let selecting = 'a';
 const buttonText = ['Choose two points on the map', 'Reset points'];
@@ -68,6 +84,8 @@ resetButton.addEventListener('click', function() {
     selecting = 'a';
     firstPoint = undefined;
     secondPoint = undefined;
+    thirdPoint = undefined;
+    forthPoint = undefined;
     directions.clear();
     this.disabled = true;
     this.textContent = buttonText[0];
@@ -88,12 +106,18 @@ map.on('click', (e) => {
         selecting = 'b';
     } else if (selecting === 'b') {
         secondPoint = coords;
+        selecting = 'c';
+    } else if (selecting === 'c') {
+        thirdPoint = coords;
+        selecting = 'd';
+    } else if (selecting === 'd') {
+        forthPoint = coords;
         selecting = 'end';
     }
     // If all points are selected — we can draw the route
-    if (firstPoint && secondPoint) {
+    if (firstPoint && secondPoint && thirdPoint && forthPoint) {
         directions.carRoute({
-            points: [firstPoint, secondPoint],
+            points: [firstPoint, secondPoint, thirdPoint, forthPoint],
         });
         markers.forEach((m) => {
             m.destroy();
