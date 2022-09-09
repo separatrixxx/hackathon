@@ -70,6 +70,8 @@ load().then((mapglAPI) => {
     const directions = new mapglAPI.Directions(map, {
         directionsApiKey: 'rugoqt4514 ',
     });
+
+
     const markers = [];
     let firstPoint;
     let secondPoint;
