@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 
 import {load} from '@2gis/mapgl';
+import {Directions} from '@2gis/mapgl-directions';
 
 ReactDOM.render(
     <React.StrictMode>
@@ -67,10 +68,9 @@ load().then((mapglAPI) => {
         });
     }
 
-    const directions = new mapglAPI.Directions(map, {
+    const directions = new Directions(map, {
         directionsApiKey: 'rugoqt4514 ',
     });
-
 
     const markers = [];
     let firstPoint;
