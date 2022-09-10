@@ -8,4 +8,4 @@ templates = Jinja2Templates(directory="static")
 
 
 
-app.include_router(map.router, prefix ='/api/v1/city', tags=['city'])
+app.include_router(map.router, prefix ='/api/v1')
