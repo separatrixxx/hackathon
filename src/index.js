@@ -14,45 +14,19 @@ ReactDOM.render(
 );
 
 let mainBtn = document.getElementById('main_btn');
-let cityFrom = document.getElementById('city_from');
 let cityTo = document.getElementById('city_to');
 
-cityFrom.value = localStorage.getItem('hometown');
-
-mainBtn?.addEventListener('click', () => {
-    if (+cityFrom.value === 0 || +cityTo.value === 0) {
-        if (+cityFrom.value === 0) {
-            cityFrom.classList.remove('bg-white');
-            cityFrom.classList.add('bg-red-200');
-        } else {
-            cityFrom.classList.add('bg-white');
-            cityFrom.classList.remove('bg-red-200');
-        }
-
-        if (+cityTo.value === 0) {
-            cityTo.classList.remove('bg-white');
-            cityTo.classList.add('bg-red-200');
-        } else {
-            cityTo.classList.add('bg-white');
-            cityTo.classList.remove('bg-red-200');
-        }
-    } else {
-        cityFrom.classList.add('bg-white');
-        cityFrom.classList.remove('bg-red-200');
-        cityTo.classList.add('bg-white');
-        cityTo.classList.remove('bg-red-200');
-
-        let hometown = cityFrom.value;
-        localStorage.setItem('hometown', hometown);
-    }
-})
+let addTo;
+let city_to_coords = [];
 
 let map;
+let longitude;
+let latitude;
 
 if ("geolocation" in navigator) {
     navigator.geolocation.getCurrentPosition(function(position) {
-        const longitude = position.coords.longitude;
-        const latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+        latitude = position.coords.latitude;
 
         load().then((mapglAPI) => {
             let time = new Date().getHours();
@@ -73,61 +47,72 @@ if ("geolocation" in navigator) {
                 });
             }
 
-            const directions = new Directions(map, {
-                directionsApiKey: 'rugoqt4514 ',
-            });
-
-            const markers = [];
-            let firstPoint;
-            let secondPoint;
-
             new mapglAPI.Marker(map, {
                 coordinates: [longitude, latitude],
             });
 
-            let selecting = 'a';
-            const buttonText = ['Choose point on the map', 'Reset points'];
-            const controlsHtml = `<button id="reset" disabled>${buttonText[0]}</button> `;
-            new mapglAPI.Control(map, controlsHtml, {
-                position: 'topLeft',
-            });
-            const resetButton = document.getElementById('reset');
-            resetButton.addEventListener('click', function() {
-                selecting = 'a';
-                firstPoint = undefined;
-                secondPoint = undefined;
-                directions.clear();
-                this.disabled = true;
-                this.textContent = buttonText[0];
-            });
-            map.on('click', (e) => {
-                const coords = e.lngLat;
-                if (selecting !== 'end') {
-                    // Just to visualize selected points, before the route is done
-                    markers.push(
-                        new mapglAPI.Marker(map, {
-                            coordinates: coords,
-                            icon: 'https://docs.2gis.com/img/dotMarker.svg',
-                        }),
-                    );
-                }
-                if (selecting === 'a') {
-                    secondPoint = coords;
-                    selecting = 'end';
-                }
-                firstPoint = [longitude, latitude]
-                // If all points are selected — we can draw the route
-                if (firstPoint && secondPoint) {
-                    directions.carRoute({
-                        points: [firstPoint, secondPoint],
-                    });
-                    markers.forEach((m) => {
-                        m.destroy();
-                    });
-                    resetButton.disabled = false;
-                    resetButton.textContent = buttonText[1];
-                }
-            });
+
         });
     });
 }
+
+mainBtn?.addEventListener('click', () => {
+    city_to_coords = [];
+    if (+cityTo.value === 0) {
+        if (+cityTo.value === 0) {
+            cityTo.classList.remove('bg-white');
+            cityTo.classList.add('bg-red-200');
+        } else {
+            cityTo.classList.add('bg-white');
+            cityTo.classList.remove('bg-red-200');
+        }
+    } else {
+        cityTo.classList.add('bg-white');
+        cityTo.classList.remove('bg-red-200');
+
+        addTo = cityTo.value;
+
+        (async () => {
+            let url = 'https://catalog.api.2gis.com/3.0/items?q='
+                + addTo + '&key=rubxgz1637';
+            let response_id = await fetch(url);
+            let city_id;
+
+            if (response_id.ok) {
+                let json = await response_id.json();
+
+                for (let val of json.result.items) {
+                    if (val.subtype === 'city') {
+                        city_id = val.id;
+                        break;
+                    }
+                }
+            } else {
+                alert("Ошибка HTTP: " + response_id.status);
+            }
+
+            let url_city = 'https://catalog.api.2gis.com/3.0/items?q=%D0%BA%D0%B0%D1%84%D0%B5&fields=items.point&city_id='
+                + city_id + '&key=rubxgz1637';
+            let response_city = await fetch(url_city);
+
+            if (response_city.ok) {
+                let json = await response_city.json();
+                city_to_coords.push(json.result.items[0].point.lon);
+                city_to_coords.push(json.result.items[0].point.lat);
+
+                const directions = new Directions(map, {
+                    directionsApiKey: 'rugoqt4514 ',
+                });
+
+                if (city_to_coords.length !== 0) {
+                    await directions.carRoute({
+                        points: [[longitude, latitude], city_to_coords],
+                    });
+                }
+            } else {
+                alert("Ошибка HTTP: " + response_city.status);
+            }
+
+        })()
+    }
+})
