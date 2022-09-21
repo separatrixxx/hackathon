@@ -4,9 +4,6 @@ import {RiRouteLine} from "react-icons/ri";
 function Header() {
     return (
         <div className="flex justify-start p-5">
-            <input id="city_from" className="block shadow-inner w-28 md:w-64 h-8 md:h-10 rounded-xl pl-2 md:pl-5 p-1
-            focus:outline-none text-gray-800 focus:border-sky-400 focus:ring-2 hover:ring-2 ring-1 ring-sky-400
-            text-xs md:text-base bg-white mr-3 md:mr-5 ease-in-out duration-300" placeholder="Ваш город" type="text" />
             <input id="city_to" className="block shadow-inner w-28 md:w-64 h-8 md:h-10 rounded-xl pl-2 md:pl-5 p-1
             focus:outline-none text-gray-800 focus:border-sky-400 focus:ring-2 hover:ring-2 ring-1 ring-sky-400
             text-xs md:text-base bg-white mr-1 md:mr-5 ease-in-out duration-300" placeholder="Куда поехать" type="text" />
