@@ -81,11 +81,16 @@ mainBtn?.addEventListener('click', () => {
             if (response_id.ok) {
                 let json = await response_id.json();
 
-                for (let val of json.result.items) {
-                    if (val.subtype === 'city') {
-                        city_id = val.id;
-                        break;
+                try {
+                    for (let val of json.result.items) {
+                        if (val.subtype === 'city') {
+                            city_id = val.id;
+                            break;
+                        }
                     }
+                } catch (e) {
+                    alert('Невозможно прочитать данные об этом городе');
+                    console.log(e);
                 }
             } else {
                 alert("Ошибка HTTP: " + response_id.status);
@@ -97,8 +102,13 @@ mainBtn?.addEventListener('click', () => {
 
             if (response_city.ok) {
                 let json = await response_city.json();
-                city_to_coords.push(json.result.items[0].point.lon);
-                city_to_coords.push(json.result.items[0].point.lat);
+
+                try {
+                    city_to_coords.push(json.result.items[0].point.lon);
+                    city_to_coords.push(json.result.items[0].point.lat);
+                } catch (e) {
+                    console.log(e);
+                }
 
                 const directions = new Directions(map, {
                     directionsApiKey: 'rugoqt4514 ',
